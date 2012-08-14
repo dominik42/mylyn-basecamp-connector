@@ -3,6 +3,8 @@ package net.todo42.mylyn.basecamp.ui;
 import java.util.List;
 
 import net.todo42.mylyn.basecamp.core.BasecampFacade;
+import net.todo42.mylyn.basecamp.core.QueryFilter;
+import net.todo42.mylyn.basecamp.core.Utils;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.mylyn.commons.workbench.forms.SectionComposite;
@@ -13,10 +15,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
+import api.basecamp.BCAuth;
+import api.basecamp.Person;
 import api.basecamp.Project;
 import api.basecamp.ToDoList;
 
@@ -25,10 +30,15 @@ import api.basecamp.ToDoList;
  */
 public class BasecampQueryPage extends AbstractRepositoryQueryPage2
 {
-    private TaskRepository tRepository = null;
+    private BCAuth auth = null;
 
     private Combo comboToDoLists = null;
     private List<ToDoList> todoLists = null;
+
+    private Combo comboPersons = null;
+    private List<Person> persons = null;
+
+    private Button btLoadCompleted = null;
 
 
     public BasecampQueryPage(TaskRepository taskRepository, IRepositoryQuery query)
@@ -36,7 +46,8 @@ public class BasecampQueryPage extends AbstractRepositoryQueryPage2
         super("basecamp", taskRepository, query);
         setTitle("Basecamp ToDo List Search");
         setMessage("Choose your todo list");
-        this.tRepository = taskRepository;
+
+        this.auth = Utils.createBCAuth(taskRepository);
     }
 
     @Override
@@ -45,10 +56,12 @@ public class BasecampQueryPage extends AbstractRepositoryQueryPage2
         GridLayout layout = new GridLayout(2, false);
         parent.setLayout(layout);
 
-        List<Project> projects = BasecampFacade.getInstance().getProjects(tRepository);
+        List<Project> projects = BasecampFacade.getInstance().getProjects(auth);
 
         createProjectsWidget(parent, projects);
         createToDoListWidget(parent, projects.get(0));
+        createPersonsCombo(parent);
+        createLoadCompleted(parent);
     }
 
     private void createProjectsWidget(Composite parent, List<Project> projects)
@@ -98,7 +111,7 @@ public class BasecampQueryPage extends AbstractRepositoryQueryPage2
         comboToDoLists = new Combo(parent, SWT.DROP_DOWN | SWT.READ_ONLY);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(comboToDoLists);
 
-        todoLists = BasecampFacade.getInstance().getToDoLists(tRepository, project);
+        todoLists = BasecampFacade.getInstance().getToDoListsForProject(auth, project);
         if (todoLists != null)
         {
             for (ToDoList todoList : todoLists)
@@ -107,6 +120,34 @@ public class BasecampQueryPage extends AbstractRepositoryQueryPage2
             }
             comboToDoLists.select(0);
         }
+    }
+
+    private void createPersonsCombo(Composite parent)
+    {
+        Label label = new Label(parent, SWT.NONE);
+        label.setText("Assigned to: ");
+
+        comboPersons = new Combo(parent, SWT.DROP_DOWN | SWT.READ_ONLY);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(comboPersons);
+
+        persons = BasecampFacade.getInstance().getPersons(auth);
+        if (persons != null)
+        {
+            for (Person person : persons)
+            {
+                comboPersons.add(person.getFirstName() + " " + person.getLastName());
+            }
+            comboPersons.select(0);
+        }
+    }
+
+    private void createLoadCompleted(Composite parent)
+    {
+        Label label = new Label(parent, SWT.NONE);
+        label.setText("Load completed tasks: ");
+
+        btLoadCompleted = new Button(parent, SWT.CHECK | SWT.CENTER);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(btLoadCompleted);
     }
 
 
@@ -140,8 +181,13 @@ public class BasecampQueryPage extends AbstractRepositoryQueryPage2
     public void applyTo(IRepositoryQuery query)
     {
         ToDoList selected = todoLists.get(comboToDoLists.getSelectionIndex());
-        query.setSummary(selected.getName());
-        query.setAttribute("id", String.valueOf(selected.getId()));
+        Person person = persons.get(comboPersons.getSelectionIndex());
+
+        query.setSummary(selected.getName() + "(" + person.getFirstName() + " " + person.getLastName() + ")");
+        // IRepositoryQuery can't handle objects as attribute values
+        query.setAttribute(QueryFilter.TODO_LIST_ID, String.valueOf(selected.getId()));
+        query.setAttribute(QueryFilter.PERSON_ID, String.valueOf(person.getId()));
+        query.setAttribute(QueryFilter.LOAD_COMPLETED, String.valueOf(btLoadCompleted.getSelection()));
     }
 
 

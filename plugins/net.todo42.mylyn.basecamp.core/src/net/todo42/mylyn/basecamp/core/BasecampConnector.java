@@ -23,7 +23,7 @@ import api.basecamp.ToDoItem;
  */
 public class BasecampConnector extends AbstractRepositoryConnector
 {
-    BasecampTaskDataHandler taskDataHandler = new BasecampTaskDataHandler(this);
+    private final BasecampTaskDataHandler taskDataHandler = new BasecampTaskDataHandler(this);
 
     @Override
     public boolean canCreateNewTask(TaskRepository repository)
@@ -86,10 +86,16 @@ public class BasecampConnector extends AbstractRepositoryConnector
         IStatus result = Status.OK_STATUS;
         monitor.beginTask("Querying Basecamp repository", IProgressMonitor.UNKNOWN);
 
-        List<ToDoItem> issues = BasecampFacade.getInstance().getItemForTodoListId(taskRepository, query.getAttribute("id"));
+        // IRepositoryQuery can't handle objects as attribute values so transform all string attributes here
+        QueryFilter filter = new QueryFilter();
+        filter.setTodoListId(query.getAttribute(QueryFilter.TODO_LIST_ID));
+        filter.setPersonId(query.getAttribute(QueryFilter.PERSON_ID));
+        filter.setLoadCompleted(Boolean.valueOf(query.getAttribute(QueryFilter.LOAD_COMPLETED)));
+
+        List<ToDoItem> issues = BasecampFacade.getInstance().getToDoItems(Utils.createBCAuth(taskRepository), filter);
         for (ToDoItem issue : issues)
         {
-            //if (!issue.isCompleted())
+            if (filter.isLoadCompleted() || !issue.isCompleted())
             {
                 TaskData data = taskDataHandler.createPartialTaskData(taskRepository, monitor, issue);
                 data.setPartial(true);
@@ -115,7 +121,7 @@ public class BasecampConnector extends AbstractRepositoryConnector
         TaskData result = null;
         monitor.beginTask("Querying Basecamp repository for todo item " + taskId, IProgressMonitor.UNKNOWN);
 
-        ToDoItem todoItem = BasecampFacade.getInstance().getItemForId(taskRepository, taskId);
+        ToDoItem todoItem = BasecampFacade.getInstance().getToDoItem(Utils.createBCAuth(taskRepository), taskId);
         result = taskDataHandler.createFullTaskData(taskRepository, monitor, todoItem);
 
         monitor.done();

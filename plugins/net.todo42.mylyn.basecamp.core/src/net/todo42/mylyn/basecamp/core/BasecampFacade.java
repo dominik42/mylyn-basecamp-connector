@@ -2,9 +2,9 @@ package net.todo42.mylyn.basecamp.core;
 
 import java.util.List;
 
-import org.eclipse.mylyn.tasks.core.TaskRepository;
-
 import api.basecamp.BCAuth;
+import api.basecamp.People;
+import api.basecamp.Person;
 import api.basecamp.Project;
 import api.basecamp.Projects;
 import api.basecamp.ToDoItem;
@@ -21,7 +21,6 @@ public class BasecampFacade
 
     private BasecampFacade()
     {
-
     }
 
     public static BasecampFacade getInstance()
@@ -29,42 +28,41 @@ public class BasecampFacade
         return instance;
     }
 
-    public List<Project> getProjects(TaskRepository repository)
+    public List<Person> getPersons(BCAuth auth)
     {
-        BCAuth auth = createAuth(repository);
+        List<Person> persons = new People(auth).getPeople();
+        return persons;
+    }
+
+    public List<Project> getProjects(BCAuth auth)
+    {
         List<Project> projects = new Projects(auth).getProjects();
         return projects;
     }
 
-    private BCAuth createAuth(TaskRepository repository)
+    public List<ToDoList> getToDoListsForProject(BCAuth auth, Project project)
     {
-        BCAuth auth = new BCAuth();
-        auth.username = repository.getUserName();
-        auth.password = repository.getPassword();
-        auth.company = "efinia";
-        auth.useSsl = true;
-        return auth;
-    }
-
-    public List<ToDoList> getToDoLists(TaskRepository repository, Project project)
-    {
-        BCAuth auth = createAuth(repository);
         List<ToDoList> todoLists = new ToDoLists(auth, project).getToDoLists();
         return todoLists;
     }
 
-    public List<ToDoItem> getItemForTodoListId(TaskRepository repository, String todoListId)
+    public List<ToDoList> getToDoListsForCurrentUser(BCAuth auth)
     {
-        BCAuth auth = createAuth(repository);
-        List<ToDoItem> todoItems = new ToDoItems(auth, todoListId).getToDoItems();
+        List<ToDoList> todoLists = new ToDoLists(auth).getToDoLists();
+        return todoLists;
+    }
+
+    public List<ToDoItem> getToDoItems(BCAuth auth, QueryFilter filter)
+    {
+        List<ToDoItem> todoItems = new ToDoItems(auth, filter.getTodoListId(), filter.getPersonId(), filter.isLoadCompleted()).getToDoItems();
         return todoItems;
     }
 
-    public ToDoItem getItemForId(TaskRepository repository, String taskId)
+    public ToDoItem getToDoItem(BCAuth auth, String taskId)
     {
-        BCAuth auth = createAuth(repository);
         ToDoItem todoItem = new ToDoItem(auth, taskId);
         return todoItem;
     }
+
 
 }
