@@ -15,7 +15,10 @@ Once the plugins are installed and your Eclipse was restartet, you can use the n
 
 1. Open the Mylyn Task Repositories View by Eclipse / Window / Show View / Other / Task Repositories
 2. Right mouse click and choose "Add Task Repository..."
-3. Choose "Basecamp Connector" from the list of all available connectors
-
-![GitHub Logo](/images/logo.png)
-![Add Task Repository screen](/dominik42/mylyn-basecamp-connector/blob/master/doc/addTaskRepository.png?raw=true)
+3. Select "Basecamp Connector" from the list of all available connectors
+![Add Task Repository](/dominik42/mylyn-basecamp-connector/blob/master/doc/addTaskRepository.png?raw=true)
+4. Enter your account data
+![Repository Settings](/dominik42/mylyn-basecamp-connector/blob/master/doc/connectorSettings.png?raw=true)
+5. Click "Finish" and wait a second because the connector tries to retrieve all your projects from Basecamp
+6. Select your query filter data
+![Query Page](/dominik42/mylyn-basecamp-connector/blob/master/doc/queryPage.png?raw=true)
