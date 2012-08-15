@@ -12,6 +12,9 @@ Eclipse Mylyn connector for 37signals Basecamp
 
 # Usage
 Once the plugins are installed and your Eclipse was restartet, you can use the newly installed connector
+
 1. Open the Mylyn Task Repositories View by Eclipse / Window / Show View / Other / Task Repositories
 2. Right mouse click and choose "Add Task Repository..."
 3. Choose "Basecamp Connector" from the list of all available connectors
+
+![GitHub Logo](/images/logo.png)
