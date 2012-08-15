@@ -3,21 +3,12 @@
 <plugin>
    <extension
          point="org.eclipse.mylyn.tasks.ui.repositories">
-      <connectorCore
-            class="net.todo42.mylyn.basecamp.core.BasecampConnector">
-      </connectorCore>
       <connectorUi
             class="net.todo42.mylyn.basecamp.ui.BasecampConnectorUi">
       </connectorUi>
-   </extension>
-   <extension
-         point="org.eclipse.mylyn.tasks.core.templates">
-      <repository
-            anonymous="true"
-            label="Workspace"
-            repositoryKind="org.eclipse.mylyn.examples.xml"
-            urlRepository="Tasks">
-      </repository>
+      <connectorCore
+            class="net.todo42.mylyn.basecamp.core.BasecampConnector">
+      </connectorCore>
    </extension>
    <extension
          point="org.eclipse.mylyn.tasks.ui.editors">
@@ -25,5 +16,14 @@
             class="net.todo42.mylyn.basecamp.ui.BasecampTaskEditorPageFactory"
             id="org.eclipse.mylyn.xml.ui.pageFactory">
       </pageFactory>
+   </extension>
+   <extension
+         point="org.eclipse.mylyn.tasks.core.templates">
+      <repository
+            anonymous="false"
+            label="Test"
+            repositoryKind="net.todo42.mylyn.basecamp"
+            urlRepository="https://efinia.basecamphq.com">
+      </repository>
    </extension>
 </plugin>
