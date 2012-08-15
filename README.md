@@ -18,4 +18,4 @@ Once the plugins are installed and your Eclipse was restartet, you can use the n
 3. Choose "Basecamp Connector" from the list of all available connectors
 
 ![GitHub Logo](/images/logo.png)
-![Add Task Repository screen](/https://github.com/dominik42/mylyn-basecamp-connector/blob/master/doc/addTaskRepository.png?raw=true)
+![Add Task Repository screen](/dominik42/mylyn-basecamp-connector/blob/master/doc/addTaskRepository.png?raw=true)
