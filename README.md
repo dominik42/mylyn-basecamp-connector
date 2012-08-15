@@ -1,4 +1,6 @@
 mylyn-basecamp-connector
 ========================
 
-Eclipse Mylyn connector for 37signals Basecamp 
+Eclipse Mylyn connector for 37signals Basecamp
+
+Installation
