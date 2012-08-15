@@ -32,6 +32,9 @@ public class BasecampQueryPage extends AbstractRepositoryQueryPage2
 {
     private BCAuth auth = null;
 
+    private Combo comboProjects = null;
+    private int lastProjectId = -1;
+
     private Combo comboToDoLists = null;
     private List<ToDoList> todoLists = null;
 
@@ -58,60 +61,63 @@ public class BasecampQueryPage extends AbstractRepositoryQueryPage2
 
         List<Project> projects = BasecampFacade.getInstance().getProjects(auth);
 
-        createProjectsWidget(parent, projects);
+        createProjectsControls(parent, projects);
         createToDoListWidget(parent, projects.get(0));
         createPersonsCombo(parent);
         createLoadCompleted(parent);
     }
 
-    private void createProjectsWidget(Composite parent, List<Project> projects)
+    private void createProjectsControls(Composite parent, final List<Project> projects)
     {
         Label label = new Label(parent, SWT.NONE);
-        label.setText("Your projects: ");
+        label.setText("Project: ");
 
-        final Combo projectList = new Combo(parent, SWT.DROP_DOWN | SWT.READ_ONLY);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(projectList);
+        comboProjects = new Combo(parent, SWT.DROP_DOWN | SWT.READ_ONLY);
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.TOP).grab(false, false).applyTo(comboProjects);
         if (projects != null)
         {
             for (Project project : projects)
             {
-                projectList.add(project.getName());
+                comboProjects.add(project.getName());
             }
-            projectList.select(0);
+            comboProjects.select(0);
+            lastProjectId = 0;
 
-            if (projects.size() > 1)
+            comboProjects.addSelectionListener(new SelectionListener()
             {
-                projectList.setEnabled(true);
-                projectList.addSelectionListener(new SelectionListener()
+                public void widgetSelected(SelectionEvent event)
                 {
-                    public void widgetSelected(SelectionEvent event)
+                    if (selectionHasChanged(event))
                     {
-                        int idx = projectList.getSelectionIndex();
-                        //selectToDoListFor(idx);
+                        lastProjectId = comboProjects.getSelectionIndex();
+                        Project selPro = getSelectedProject(comboProjects.getSelectionIndex());
+                        todoLists = BasecampFacade.getInstance().getToDoListsForProject(auth, selPro);
+                        updateToDoListCombo(todoLists);
                     }
+                }
 
-                    public void widgetDefaultSelected(SelectionEvent event)
-                    {
-                    }
-                });
-            }
-            else
-            {
-                projectList.setEnabled(false);
-            }
+                private Project getSelectedProject(int selectionIndex)
+                {
+                    return projects.get(selectionIndex);
+                }
+
+                public void widgetDefaultSelected(SelectionEvent event)
+                {
+                }
+            });
+
         }
-        setControl(projectList);
+        setControl(comboProjects);
     }
 
-    private void createToDoListWidget(Composite parent, Project project)
+    private boolean selectionHasChanged(SelectionEvent event)
     {
-        Label todolistLabel = new Label(parent, SWT.NONE);
-        todolistLabel.setText("ToDo List: ");
+        return comboProjects.getSelectionIndex() != lastProjectId;
+    }
 
-        comboToDoLists = new Combo(parent, SWT.DROP_DOWN | SWT.READ_ONLY);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(comboToDoLists);
-
-        todoLists = BasecampFacade.getInstance().getToDoListsForProject(auth, project);
+    protected void updateToDoListCombo(List<ToDoList> todoLists)
+    {
+        comboToDoLists.removeAll();
         if (todoLists != null)
         {
             for (ToDoList todoList : todoLists)
@@ -122,13 +128,25 @@ public class BasecampQueryPage extends AbstractRepositoryQueryPage2
         }
     }
 
+    private void createToDoListWidget(Composite parent, Project project)
+    {
+        Label todolistLabel = new Label(parent, SWT.NONE);
+        todolistLabel.setText("ToDo List: ");
+
+        comboToDoLists = new Combo(parent, SWT.DROP_DOWN | SWT.READ_ONLY);
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.TOP).grab(false, false).applyTo(comboToDoLists);
+
+        todoLists = BasecampFacade.getInstance().getToDoListsForProject(auth, project);
+        updateToDoListCombo(todoLists);
+    }
+
     private void createPersonsCombo(Composite parent)
     {
         Label label = new Label(parent, SWT.NONE);
         label.setText("Assigned to: ");
 
         comboPersons = new Combo(parent, SWT.DROP_DOWN | SWT.READ_ONLY);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(comboPersons);
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.TOP).grab(false, false).applyTo(comboPersons);
 
         persons = BasecampFacade.getInstance().getPersons(auth);
         if (persons != null)
@@ -183,7 +201,7 @@ public class BasecampQueryPage extends AbstractRepositoryQueryPage2
         ToDoList selected = todoLists.get(comboToDoLists.getSelectionIndex());
         Person person = persons.get(comboPersons.getSelectionIndex());
 
-        query.setSummary(selected.getName() + "(" + person.getFirstName() + " " + person.getLastName() + ")");
+        query.setSummary(selected.getName() + " (" + person.getFirstName() + " " + person.getLastName() + ")");
         // IRepositoryQuery can't handle objects as attribute values
         query.setAttribute(QueryFilter.TODO_LIST_ID, String.valueOf(selected.getId()));
         query.setAttribute(QueryFilter.PERSON_ID, String.valueOf(person.getId()));
