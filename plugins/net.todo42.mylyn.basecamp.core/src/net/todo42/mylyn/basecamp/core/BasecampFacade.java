@@ -42,7 +42,15 @@ public class BasecampFacade
 
     public List<ToDoList> getToDoListsForProject(BCAuth auth, Project project)
     {
-        List<ToDoList> todoLists = new ToDoLists(auth, project).getToDoLists();
+        List<ToDoList> todoLists = null;
+        if (project == null)
+        {
+            todoLists = new ToDoLists(auth).getToDoLists();
+        }
+        else
+        {
+            todoLists = new ToDoLists(auth, project).getToDoLists();
+        }
         return todoLists;
     }
 
