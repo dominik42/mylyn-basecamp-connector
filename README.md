@@ -20,7 +20,7 @@ Once the plugins are installed and your Eclipse was restartet, you can use the n
 ![Add Task Repository](/dominik42/mylyn-basecamp-connector/blob/master/doc/addTaskRepository.png?raw=true)
 
 * Enter your account data
-** Server URL: your Basecamp project URL (to find this URL, login at Basecamp and see under  My Info / Account)  
+* * Server URL: your Basecamp project URL (to find this URL, login at Basecamp and see under  My Info / Account)  
 
 ![Repository Settings](/dominik42/mylyn-basecamp-connector/blob/master/doc/connectorSettings.png?raw=true)
 
