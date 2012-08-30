@@ -22,7 +22,9 @@ Once the plugins are installed and your Eclipse was restartet, you can use the n
 * Enter your account data
   * Server : your Basecamp project URL as &lt;your-project&gt;.basecamphq.com (e.g. efinia.basecamphq.com) ; 
            you can find and change this URL at your Basecamp account settings (login at Basecamp and see under  My Info / Account)
-  * Label : This description is used by Mylyn as name for this repository in the Task Repositories 
+  * Label : This description is used by Mylyn as name for this repository in the Task Repositories
+  * User ID : your Basecamp account user
+  * Password : your Basecamp account password
 
 ![Repository Settings](/dominik42/mylyn-basecamp-connector/blob/master/doc/connectorSettings.png?raw=true)
 
