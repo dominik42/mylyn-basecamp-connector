@@ -1,3 +1,4 @@
 [submodule "java-basecamp-api-wrapper"]
 	path = java-basecamp-api-wrapper
-	url = git@github.com:dominik42/java-basecamp-api-wrapper.git
+	url = https://github.com/dominik42/java-basecamp-api-wrapper.git
+
