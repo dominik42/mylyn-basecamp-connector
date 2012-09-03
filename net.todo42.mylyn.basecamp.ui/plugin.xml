@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.3"?>
+<plugin>
+   <extension
+         point="org.eclipse.mylyn.tasks.ui.repositories">
+      <connectorUi
+            class="net.todo42.mylyn.basecamp.ui.BasecampConnectorUi">
+      </connectorUi>
+      <connectorCore
+            class="net.todo42.mylyn.basecamp.core.BasecampConnector">
+      </connectorCore>
+   </extension>
+   <extension
+         point="org.eclipse.mylyn.tasks.ui.editors">
+      <pageFactory
+            class="net.todo42.mylyn.basecamp.ui.BasecampTaskEditorPageFactory"
+            id="org.eclipse.mylyn.xml.ui.pageFactory">
+      </pageFactory>
+   </extension>
+   <extension
+         point="org.eclipse.mylyn.tasks.core.templates">
+      <repository
+            anonymous="false"
+            label="Test"
+            repositoryKind="net.todo42.mylyn.basecamp"
+            urlRepository="https://efinia.basecamphq.com">
+      </repository>
+   </extension>
+</plugin>
