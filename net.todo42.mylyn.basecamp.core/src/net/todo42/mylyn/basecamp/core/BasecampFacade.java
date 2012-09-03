@@ -62,7 +62,7 @@ public class BasecampFacade
 
     public List<ToDoItem> getToDoItems(BCAuth auth, QueryFilter filter)
     {
-        List<ToDoItem> todoItems = new ToDoItems(auth, filter.getTodoListId()).getToDoItems(); //, filter.getPersonId(), filter.isLoadCompleted()).getToDoItems();
+        List<ToDoItem> todoItems = new ToDoItems(auth, filter.getTodoListId(), filter.getPersonId(), filter.isLoadCompleted()).getToDoItems();
         return todoItems;
     }
 
